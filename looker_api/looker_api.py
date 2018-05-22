@@ -2,11 +2,6 @@ import time
 
 import requests
 
-from helpers import tidy_dates
-
-ENDPOINTS_DATA = {
-}
-
 
 class LookerInvalidEndpoint(Exception):
 	pass
@@ -57,15 +52,15 @@ class Looker(object):
 
 		status_code = r.status_code
 		if status_code == 400:
-			raise StatRequestError("Bad request")
+			raise LookerRequestError("Bad request")
 		elif status_code == 401:
-			raise StatRequestError("Unauthorized API key")
+			raise LookerRequestError("Unauthorized API key")
 		elif status_code == 403:
-			raise StatRequestError("Usage Limit Exceeded")
+			raise LookerRequestError("Usage Limit Exceeded")
 		elif status_code == 404:
-			raise StatRequestError("Not Found")
+			raise LookerRequestError("Not Found")
 		elif status_code == 500:
-			raise StatRequestError("Internal Server Error")
+			raise LookerRequestError("Internal Server Error")
 
 		response_data = r.json()
 		
@@ -84,20 +79,20 @@ class Looker(object):
 
 		status_code = r.status_code
 		if status_code == 400:
-			raise StatRequestError("Bad request")
+			raise LookerRequestError("Bad request")
 		elif status_code == 401:
-			raise StatRequestError("Unauthorized API key")
+			raise LookerRequestError("Unauthorized API key")
 		elif status_code == 403:
-			raise StatRequestError("Usage Limit Exceeded")
+			raise LookerRequestError("Usage Limit Exceeded")
 		elif status_code == 404:
-			raise StatRequestError("Not Found")
+			raise LookerRequestError("Not Found")
 		elif status_code == 500:
-			raise StatRequestError("Internal Server Error")
+			raise LookerRequestError("Internal Server Error")
 
 		response_data = r.json()
 
 		if 'access_token' not in response_data or 'expires_in' not in response_data:
-			raise StatResponseError(response_data)
+			raise LookerResponseError(response_data)
 
 		self.access_expiration = time.time() + (int(response_data['expires_in']) - 5)
 		self.access_token = response_data['access_token']
@@ -106,29 +101,5 @@ class Looker(object):
 		endpoint = "/looks/{0}/run".format(look_id)
 
 		url = self._make_api_request_url(endpoint,rtn_format)
-
-		return self._do_request(url, kwargs)
-
-	def request(self, endpoint, **kwargs):
-		""" Make a request to the getstat.com API
-
-		endpoint should correspond to an endpoint listed in the documentation
-		kawrgs should be a dictionary of query parameters for the request
-		"""
-
-		if endpoint not in ENDPOINTS_DATA.keys():
-			raise StatInvalidEndpoint("The endpoint {endpoint} does not exist".format(endpoint))
-
-		allowed_parameters = ENDPOINTS_DATA[endpoint]
-		illegal_paramters = [key for key in kwargs.keys()
-							 if key not in allowed_parameters]
-		if illegal_paramters:
-			raise InvalidParameters("The parameter(s) {parameters} are not legal"
-									" for the endpoint `{endpoint}`".format(
-										parameters=illegal_paramters,
-										endpoint=endpoint))
-
-		url = self._make_api_request_url(endpoint, "/json")
-		kwargs = tidy_dates(kwargs)
 
 		return self._do_request(url, kwargs)
