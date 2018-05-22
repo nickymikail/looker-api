@@ -2,11 +2,6 @@ import time
 
 import requests
 
-from helpers import tidy_dates
-
-ENDPOINTS_DATA = {
-}
-
 
 class LookerInvalidEndpoint(Exception):
 	pass
@@ -106,29 +101,5 @@ class Looker(object):
 		endpoint = "/looks/{0}/run".format(look_id)
 
 		url = self._make_api_request_url(endpoint,rtn_format)
-
-		return self._do_request(url, kwargs)
-
-	def request(self, endpoint, **kwargs):
-		""" Make a request to the getstat.com API
-
-		endpoint should correspond to an endpoint listed in the documentation
-		kawrgs should be a dictionary of query parameters for the request
-		"""
-
-		if endpoint not in ENDPOINTS_DATA.keys():
-			raise StatInvalidEndpoint("The endpoint {endpoint} does not exist".format(endpoint))
-
-		allowed_parameters = ENDPOINTS_DATA[endpoint]
-		illegal_paramters = [key for key in kwargs.keys()
-							 if key not in allowed_parameters]
-		if illegal_paramters:
-			raise InvalidParameters("The parameter(s) {parameters} are not legal"
-									" for the endpoint `{endpoint}`".format(
-										parameters=illegal_paramters,
-										endpoint=endpoint))
-
-		url = self._make_api_request_url(endpoint, "/json")
-		kwargs = tidy_dates(kwargs)
 
 		return self._do_request(url, kwargs)
