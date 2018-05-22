@@ -57,15 +57,15 @@ class Looker(object):
 
 		status_code = r.status_code
 		if status_code == 400:
-			raise StatRequestError("Bad request")
+			raise LookerRequestError("Bad request")
 		elif status_code == 401:
-			raise StatRequestError("Unauthorized API key")
+			raise LookerRequestError("Unauthorized API key")
 		elif status_code == 403:
-			raise StatRequestError("Usage Limit Exceeded")
+			raise LookerRequestError("Usage Limit Exceeded")
 		elif status_code == 404:
-			raise StatRequestError("Not Found")
+			raise LookerRequestError("Not Found")
 		elif status_code == 500:
-			raise StatRequestError("Internal Server Error")
+			raise LookerRequestError("Internal Server Error")
 
 		response_data = r.json()
 		
@@ -84,20 +84,20 @@ class Looker(object):
 
 		status_code = r.status_code
 		if status_code == 400:
-			raise StatRequestError("Bad request")
+			raise LookerRequestError("Bad request")
 		elif status_code == 401:
-			raise StatRequestError("Unauthorized API key")
+			raise LookerRequestError("Unauthorized API key")
 		elif status_code == 403:
-			raise StatRequestError("Usage Limit Exceeded")
+			raise LookerRequestError("Usage Limit Exceeded")
 		elif status_code == 404:
-			raise StatRequestError("Not Found")
+			raise LookerRequestError("Not Found")
 		elif status_code == 500:
-			raise StatRequestError("Internal Server Error")
+			raise LookerRequestError("Internal Server Error")
 
 		response_data = r.json()
 
 		if 'access_token' not in response_data or 'expires_in' not in response_data:
-			raise StatResponseError(response_data)
+			raise LookerResponseError(response_data)
 
 		self.access_expiration = time.time() + (int(response_data['expires_in']) - 5)
 		self.access_token = response_data['access_token']
